@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
 import { UserModel, IUser } from './user.js';
+import { PacketModel, IPacket } from './packet.js';
 
 async function main() {
   mongoose.set('strictQuery', true); // Mantiene el comportamiento actual
 
-  await mongoose.connect('mongodb://127.0.0.1:27017/test')
+  await mongoose.connect('mongodb://localhost:27017/test')
   .then(() => console.log('Conectado a MongoDB'))
   .catch(err => console.error('Error al conectar:', err));
 
@@ -16,8 +17,20 @@ async function main() {
 
   console.log("user1", user1); 
   const newUser= new UserModel(user1);
-  const user2: IUser = await newUser.save();
-  console.log("user2",user2);
+  await newUser.save();
+  const packet1: IPacket = {
+    "weight": 5,
+    "user": newUser._id
+  };
+  console.log("packet1", packet1);
+  await new PacketModel(packet1).save();
+  const packet = await Packet.
+  findOne({weight: 5}).
+  populate('user').
+  exec();
+// prints "The author is Ian Fleming"
+  console.log('The author is %s', packet.user.name);
+  /*console.log("user2",user2);
 
   // findById devuelve un objeto usando el _id.
   const user3: IUser | null = await UserModel.findById(user2._id);
@@ -33,6 +46,8 @@ async function main() {
   const user5: Partial<IUser> | null  = await UserModel.findOne({ name: 'Bill' })
     .select('name email').lean();
   console.log("user5",user5);
+  */
+
 }
 
 main()
