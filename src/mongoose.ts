@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { UserModel, IUser } from './user.js';
 import { PacketModel, IPacket } from './packet.js';
-
+const { Schema } = mongoose;
 async function main() {
   mongoose.set('strictQuery', true); // Mantiene el comportamiento actual
 
@@ -14,7 +14,7 @@ async function main() {
     "email": 'bill@initech.com',
     "avatar": 'https://i.imgur.com/dM7Thhn.png'
   };
-
+  /*                    SAVE                        */
   console.log("user1", user1); 
   const newUser= new UserModel(user1);
   await newUser.save();
@@ -24,12 +24,46 @@ async function main() {
   };
   console.log("packet1", packet1);
   await new PacketModel(packet1).save();
-  const packet = await Packet.
-  findOne({weight: 5}).
-  populate('user').
-  exec();
-// prints "The author is Ian Fleming"
-  console.log('The author is %s', packet.user.name);
+  /*                    POPULATE                        */
+  const packet: IPacket | null = await PacketModel.
+    findOne({weight: 5}).
+    populate('user').
+    exec();
+  console.log(mongoose.isValidObjectId(packet.user) ? 'User is populated' : 'User is not populated');
+  if(packet.user != null){
+    console.log('The user is %s', packet.user);
+  }
+  else{
+    console.log('User not found');
+  }
+
+  const packet2: IPacket = {
+    "weight": 6,
+    "user": newUser._id
+  };
+  console.log("packet2", packet2);
+  await new PacketModel(packet2).save();
+
+  /*                    UPDATE                        */
+  const res: any = await UserModel.
+    updateOne({ name: 'Bill' }, { $push: { packets: { $each: [packet1._id, packet2._id] } } });
+  console.log(res);
+
+  /*                    SELECT                       */
+  const userSelected: Partial<IUser> | null  = await UserModel.findOne({ name: 'Bill' })
+    .select('name email').lean();
+  console.log("user5",userSelected);
+
+  /*                    DELETE                       */
+  const res2: any = await UserModel.deleteOne({ name: 'Bill' });
+  console.log(res2);
+  const userDeleted: Partial<IUser> | null  = await UserModel.findOne({ name: 'Bill' })
+  .select('name email').lean();
+  console.log("user5",userDeleted);
+ 
+ 
+ 
+ 
   /*console.log("user2",user2);
 
   // findById devuelve un objeto usando el _id.
