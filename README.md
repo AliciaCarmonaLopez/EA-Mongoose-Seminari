@@ -51,3 +51,6 @@ Ejecutar JS
 ```
 node dist/mongoogse.js
 ```
+
+## EJERCICIO
+Funciona todo, para hacerlo he utlizado sobretodo este link  https://mongoosejs.com/docs/populate.html junto con lo que había de ejemplo. De nuevo el vídeo está incluido en el repositorio.
